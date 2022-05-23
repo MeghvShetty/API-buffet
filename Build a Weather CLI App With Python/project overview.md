@@ -20,6 +20,7 @@ ___
  - [Current weather data by city name](https://openweathermap.org/current#name)
  - OpenWeather [weather API](https://openweathermap.org/api)
  - [API](https://en.wikipedia.org/wiki/API)
+ - [Real Python](https://realpython.com/build-a-python-weather-app-cli/)
 
 
 ## Prerequisites

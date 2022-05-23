@@ -1,20 +1,55 @@
 # weather 
+import argparse
+import json
 from configparser import ConfigParser
-from distutils.command.config import config
-from tkinter.dnd import dnd_start
+from urllib import parse,request, response
+
+
+BASE_WEATHER_API_URL ="https://api.openweathermap.org/data/2.5/weather"  # base API URL as it is the same for all the API calls maked in this program 
 
 def _get_api_key():
-      """Fetch the API key from your configuration file.
-
-    Expects a configuration file named "secrets.ini" with structure:
-
-        [openweather]
-        api_key=<YOUR-OPENWEATHER-API-KEY>
-    """
     config = ConfigParser()
     config.read("secrets.ini")
     return config["openweather"]["api_key"]
 
+def build_weather_query(city_input, imperial=False):
+    api_key = _get_api_key()
+    city_name = "".join(city_input)
+    url_encoded_city_name = parse.quote_plus(city_name) # which encodes the string so that you can make a valid HTTP request to the API. Aside from converting certain characters through UTF-8 encoding, this function also converts whitespace characters to plus symbols (+), which is a form of URL encoding that’s necessary for proper calls to this API.
+    units = "imperial" if imperial else "metric"
 
-print(_get_api_key)
+    url = (
+        f"{BASE_WEATHER_API_URL}?q={url_encoded_city_name}"
+        f"&units={units}&appid={api_key}"
+    )
+    return url
+
+def read_user_cli_args():
+    parser = argparse.ArgumentParser(   # create an instance of argparse.ArgumentParser
+        description="get weather and temperature information for city"
+    )
+
+    parser.add_argument (
+        "city", nargs="+", type=str, help="enter the city name"
+    )
+
+    parser.add_argument(
+        "-i",
+        "--imperial",
+        action="store_true",
+        help="display the temprature in imperial units",
+
+    )
+    return parser.parse_args()  # .parse_args(), which will eventually be the user-input values
+
+def get_weather_data(query_url):
+    response = request.urlopen(query_url)
+    data = response.read()
+    return json.loads(data)
+
+if __name__ == "__main__": # opens a conditional block after checking for Python’s "__main__" namespace, which allows you to define code that should run when you’re executing weather.py as a script
+    user_args = read_user_cli_args()
+    query_url = build_weather_query(user_args.city,user_args.imperial)
+    weather_data = get_weather_data(query_url)
+    print(weather_data)
 
