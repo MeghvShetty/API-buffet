@@ -1,10 +1,12 @@
 # weather 
 import argparse
+import ssl
 import json
+import sys
 from configparser import ConfigParser
-from urllib import parse,request, response
+from urllib import  error, parse,request
 
-
+ssl._create_default_https_context = ssl._create_unverified_context # choose not to authenticate SSL certificate
 BASE_WEATHER_API_URL ="https://api.openweathermap.org/data/2.5/weather"  # base API URL as it is the same for all the API calls maked in this program 
 
 def _get_api_key():
@@ -43,13 +45,26 @@ def read_user_cli_args():
     return parser.parse_args()  # .parse_args(), which will eventually be the user-input values
 
 def get_weather_data(query_url):
-    response = request.urlopen(query_url)
+    try:
+        response = request.urlopen(query_url)
+    except error.HTTPError:
+        print(error)
+        if error.HTTPError == 401:  # 401 - Unauthorized
+            sys.exit("Access denied. Check your API Key.")
+        elif error.HTTPError == 404:  # 404 - Not Found
+            sys.exit("can't find weather data for this city")
+        else:
+           sys.exit(f"something went wrong...({error.HTTPError})")
+    
     data = response.read()
-    return json.loads(data)
+    try:
+        return json.loads(data)
+    except json.JSONDecodeError:
+        sys.exit("Couldn't read the server response.")
+  
 
 if __name__ == "__main__": # opens a conditional block after checking for Python’s "__main__" namespace, which allows you to define code that should run when you’re executing weather.py as a script
     user_args = read_user_cli_args()
     query_url = build_weather_query(user_args.city,user_args.imperial)
     weather_data = get_weather_data(query_url)
     print(weather_data)
-
