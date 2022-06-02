@@ -3,7 +3,7 @@ import requests
 
 print ("Enter Zip in US:")
 zip = str(input()) # str conv
-response = requests.get("https://api.openweathermap.org/data/2.5/forecast?zip="+zip+",us&appid=4443f27e3e4be82d846b4fb12ae7a844")# add parameter to the url using str concatenate
+response = requests.get("https://api.openweathermap.org/data/2.5/forecast?zip="+zip+",us&appid= #Add API ID#")# add parameter to the url using str concatenate
 data = response.json() # Json format
 temp_dict = {}
 #temp_dict = {"key":"value"}
