@@ -5,7 +5,6 @@ Working on API using Python
   - Build a Weather CLI App With Python
   
 ## secrets_mgr.py
-___
 Python script to pull key, value from AWS Secrets Manager. Return a cleartext secret JSON string. 
 - :param secret_name:
 - :return: Dict of cleartext secret values
